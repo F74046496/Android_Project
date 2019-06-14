@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.support.annotation.MainThread;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private TextView musicText;
     private Handler mHandler = new Handler();
+    private Runnable mRunnable;
 
 
     @Override
@@ -87,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        MainActivity.this.runOnUiThread(new Runnable() {
+        MainActivity.this.runOnUiThread(mRunnable = new Runnable() {
             @Override
             public void run() {
                 if(mMediaPlayer != null){
@@ -117,11 +119,6 @@ public class MainActivity extends AppCompatActivity {
         bNext = findViewById(R.id.btn_next);
         bMode = findViewById(R.id.btn_mode);
 
-        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
-
-        speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -132,6 +129,13 @@ public class MainActivity extends AppCompatActivity {
         readMusicAndSetMediaPlayer();
         tSong.setSelected(true);
 
+
+        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(MainActivity.this);
+
+        speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
         mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle params) {
@@ -140,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onBeginningOfSpeech() {
-                //Toast.makeText(MainActivity.this, "begin", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "begin listening", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -320,8 +324,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if(mMediaPlayer != null)
+        if(mMediaPlayer != null) {
+            mMediaPlayer.pause();
+            mMediaPlayer.stop();
             mMediaPlayer.release();
+        }
+        mHandler.removeCallbacks(mRunnable);
+
 
         super.onDestroy();
 
