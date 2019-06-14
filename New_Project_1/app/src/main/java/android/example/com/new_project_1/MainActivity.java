@@ -3,6 +3,7 @@ package android.example.com.new_project_1;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -14,8 +15,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,10 +46,67 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<File> ArrayMusic;
     private String name;
 
+    // use for music seekbar
+    private SeekBar seekBar;
+    private TextView musicText;
+    private Handler mHandler = new Handler();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        // music seekbar setting
+        seekBar = findViewById(R.id.seekBar);
+        musicText = findViewById(R.id.musicTimeText);
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                if(mMediaPlayer != null && b){
+                    mMediaPlayer.seekTo(i * 1000);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                if(mMediaPlayer != null) {
+                    mMediaPlayer.pause();
+                    bPlay.setText("play");
+                }
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if(mMediaPlayer != null) {
+                    mMediaPlayer.start();
+                    bPlay.setText("pause");
+                }
+            }
+        });
+
+        MainActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(mMediaPlayer != null){
+                    int mCurrentPosition = mMediaPlayer.getCurrentPosition() / 1000;
+                    seekBar.setProgress(mCurrentPosition);
+                    int minutes = mCurrentPosition / 60;
+                    int seconds = mCurrentPosition % 60;
+                    String time;
+                    if(seconds < 10)
+                        time = String.valueOf(minutes) + ":0" + String.valueOf(seconds);
+                    else
+                        time = String.valueOf(minutes) + ":" + String.valueOf(seconds);
+                    musicText.setText(time);
+                }
+                mHandler.postDelayed(this, 1000);
+            }
+        });
+
+
 
         mRelative = findViewById(R.id.parentLayout);
 
@@ -79,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onBeginningOfSpeech() {
-                Toast.makeText(MainActivity.this, "begin", Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "begin", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -106,10 +167,26 @@ public class MainActivity extends AppCompatActivity {
             public void onResults(Bundle results) {
                 ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-                if(result != null) {
-                    speechInput = result.get(0);
+                if(bMode.getText().toString().equals("mode_v")) {
+                    if(result != null) {
+                        speechInput = result.get(0);
 
-                    Toast.makeText(MainActivity.this, speechInput, Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, speechInput, Toast.LENGTH_LONG).show();
+
+                        if((speechInput.equals("暫停") || speechInput.equals("暫 停"))&& bPlay.getText().toString().equals("pause")) {
+                            playAndPause();
+                            //Toast.makeText(MainActivity.this, "暫停", Toast.LENGTH_LONG).show();
+                        }
+                        else if ((speechInput.equals("播放") || speechInput.equals("播 放"))&& bPlay.getText().toString().equals("play")) {
+                            playAndPause();
+                        }
+                        else if (speechInput.equals("上一首") || speechInput.equals("上 一 首")) {
+                            playThePrevious();
+                        }
+                        else if (speechInput.equals("下一首") || speechInput.equals("下 一 首")) {
+                            playTheNext();
+                        }
+                    }
                 }
             }
 
@@ -196,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
         }
         //Toast.makeText(MainActivity.this, order, Toast.LENGTH_LONG).show();
         mMediaPlayer.pause();
-        mMediaPlayer.stop();;
+        mMediaPlayer.stop();
         mMediaPlayer.release();
 
         readMusicAndSetMediaPlayer();
@@ -209,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mMediaPlayer.pause();
-        mMediaPlayer.stop();;
+        mMediaPlayer.stop();
         mMediaPlayer.release();
 
         readMusicAndSetMediaPlayer();
@@ -223,8 +300,15 @@ public class MainActivity extends AppCompatActivity {
             bPlay.setText("pause");
         }
 
+
         mMediaPlayer = MediaPlayer.create(MainActivity.this, uri);
+
+        // music seekbar max time setting
+        seekBar.setMax(mMediaPlayer.getDuration() / 1000);
+
         mMediaPlayer.start();
+
+
 
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -238,7 +322,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         if(mMediaPlayer != null)
             mMediaPlayer.release();
+
         super.onDestroy();
+
     }
 
 }
