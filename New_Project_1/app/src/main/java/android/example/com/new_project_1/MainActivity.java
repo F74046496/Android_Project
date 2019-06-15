@@ -3,6 +3,7 @@ package android.example.com.new_project_1;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private Button bPrevious;
     private Button bPlay;
     private Button bNext;
-    private Button bMode;
+    private ImageView bMode;
 
     private MediaPlayer mMediaPlayer;
 
@@ -53,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler = new Handler();
     private Runnable mRunnable;
 
+    private int maximumDuration;
+    private int IsLoop = 0;
+    private int IsRnd = 0;
+    private int whichMode = 0;
+    ArrayList<Integer> array_image = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,16 @@ public class MainActivity extends AppCompatActivity {
         // music seekbar setting
         seekBar = findViewById(R.id.seekBar);
         musicText = findViewById(R.id.musicTimeText);
+
+
+        //image
+        array_image.add(R.drawable.forever);
+        array_image.add(R.drawable.reset);
+        array_image.add(R.drawable.love);
+        array_image.add(R.drawable.ref_rain);
+        array_image.add(R.drawable.kanon);
+        //////////////////////////////////////////////////////////////
+
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -97,12 +114,19 @@ public class MainActivity extends AppCompatActivity {
                     seekBar.setProgress(mCurrentPosition);
                     int minutes = mCurrentPosition / 60;
                     int seconds = mCurrentPosition % 60;
+                    int mmaxi = maximumDuration/60;
+                    int smaxi = maximumDuration%60;
+                    String time2;
                     String time;
                     if(seconds < 10)
                         time = String.valueOf(minutes) + ":0" + String.valueOf(seconds);
                     else
                         time = String.valueOf(minutes) + ":" + String.valueOf(seconds);
-                    musicText.setText(time);
+                    if(smaxi < 10)
+                        time2 = String.valueOf(mmaxi) + ":0" + String.valueOf(smaxi);
+                    else
+                        time2 = String.valueOf(mmaxi) + ":" + String.valueOf(smaxi);
+                    musicText.setText(time + " / " + time2);
                 }
                 mHandler.postDelayed(this, 1000);
             }
@@ -119,12 +143,18 @@ public class MainActivity extends AppCompatActivity {
         bNext = findViewById(R.id.btn_next);
         bMode = findViewById(R.id.btn_mode);
 
+        bPrevious.setVisibility(View.GONE);
+        bPlay.setVisibility(View.GONE);
+        bNext.setVisibility(View.GONE); //  needless
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
 
         ArrayMusic = (ArrayList) bundle.getParcelableArrayList("song_music");
         order = bundle.getInt("song_order");
+
+        changebackground();
+
 
         readMusicAndSetMediaPlayer();
         tSong.setSelected(true);
@@ -171,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResults(Bundle results) {
                 ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-                if(bMode.getText().toString().equals("mode_v")) {
+                if(whichMode == 1) {
                     if(result != null) {
                         speechInput = result.get(0);
 
@@ -226,17 +256,35 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void modeChange(View view) {
-        if(bMode.getText().toString().equals("mode_b")) {
-            bMode.setText("mode_v");
+        if(whichMode == 0) {
+            whichMode = 1;
             bPrevious.setVisibility(View.GONE);
             bPlay.setVisibility(View.GONE);
             bNext.setVisibility(View.GONE);
+
+            ImageView myImgView = (ImageView) findViewById(R.id.btn_mode);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_black_40dp, getApplicationContext().getTheme()));
+            } else {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_black_40dp));
+            }
+
         }
-        else if(bMode.getText().toString().equals("mode_v")) {
-            bMode.setText("mode_b");
-            bPrevious.setVisibility(View.VISIBLE);
+        else if(whichMode == 1) {
+            whichMode = 0;
+            /*bPrevious.setVisibility(View.VISIBLE);
             bPlay.setVisibility(View.VISIBLE);
-            bNext.setVisibility(View.VISIBLE);
+            bNext.setVisibility(View.VISIBLE);*/
+            bPrevious.setVisibility(View.GONE);
+            bPlay.setVisibility(View.GONE);
+            bNext.setVisibility(View.GONE);
+
+            ImageView myImgView = (ImageView) findViewById(R.id.btn_mode);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_off_black_40dp, getApplicationContext().getTheme()));
+            } else {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_mic_off_black_40dp));
+            }
         }
     }
 
@@ -252,14 +300,40 @@ public class MainActivity extends AppCompatActivity {
         playTheNext();
     }
 
+    public void playLoopClick(View view) {
+        playTheLoop();
+    }
+
+    public void playRndclick(View view) {
+        playTheRnd();
+    }
+
     private void playAndPause() {
         if(mMediaPlayer.isPlaying()) {
             mMediaPlayer.pause();
             bPlay.setText("play");
+
+            ImageView myImgView = (ImageView) findViewById(R.id.play_pause);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_circle_filled, getApplicationContext().getTheme()));
+            } else {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_play_circle_filled));
+            }
         }
         else {
             mMediaPlayer.start();
             bPlay.setText("pause");
+
+
+            ImageView myImgView = (ImageView) findViewById(R.id.play_pause);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_black_24dp, getApplicationContext().getTheme()));
+            } else {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_black_24dp));
+            }
+
 
             mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
@@ -271,6 +345,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void playThePrevious() {
+        if(IsRnd == 1) {
+            Random ran = new Random();
+            order = (order + ran.nextInt(ArrayMusic.size()))%ArrayMusic.size();
+        }
         order = order - 1;
         if(order < 0) {
             order = order + ArrayMusic.size();
@@ -280,10 +358,16 @@ public class MainActivity extends AppCompatActivity {
         mMediaPlayer.stop();
         mMediaPlayer.release();
 
+        changebackground();
+
         readMusicAndSetMediaPlayer();
     }
 
     private void playTheNext() {
+        if(IsRnd == 1) {
+            Random ran = new Random();
+            order = (order + ran.nextInt(ArrayMusic.size()))%ArrayMusic.size();
+        }
         order = order + 1;
         if(order == ArrayMusic.size()) {
             order = order - ArrayMusic.size();
@@ -293,7 +377,27 @@ public class MainActivity extends AppCompatActivity {
         mMediaPlayer.stop();
         mMediaPlayer.release();
 
+        changebackground();
+
         readMusicAndSetMediaPlayer();
+    }
+
+    private void playTheLoop() {
+        IsLoop = (IsLoop+1)%2;
+        if(IsLoop == 1) {
+            Toast.makeText(MainActivity.this, "單曲重複", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(MainActivity.this, "重複撥放關閉", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void playTheRnd() {
+        IsRnd = (IsRnd+1)%2;
+        if(IsRnd == 1) {
+            Toast.makeText(MainActivity.this, "隨機撥放開起", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(MainActivity.this, "隨機撥放關閉", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void readMusicAndSetMediaPlayer() {
@@ -309,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
 
         // music seekbar max time setting
         seekBar.setMax(mMediaPlayer.getDuration() / 1000);
+        maximumDuration = mMediaPlayer.getDuration() / 1000;
 
         mMediaPlayer.start();
 
@@ -317,6 +422,12 @@ public class MainActivity extends AppCompatActivity {
         mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                if(IsLoop == 1) {
+                    order--;
+                } else if(IsRnd == 1) {
+                    Random ran = new Random();
+                    order = (order + ran.nextInt(ArrayMusic.size()))%ArrayMusic.size();
+                }
                 playTheNext();
             }
         });
@@ -336,4 +447,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void changebackground() {
+        ImageView myImgView = (ImageView) findViewById(R.id.albumCover);
+        ImageView background = (ImageView) findViewById(R.id.fullbackground);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            myImgView.setImageDrawable(getResources().getDrawable(array_image.get(order%5), getApplicationContext().getTheme()));
+            background.setImageDrawable(getResources().getDrawable(array_image.get(order%5), getApplicationContext().getTheme()));
+        } else {
+            myImgView.setImageDrawable(getResources().getDrawable(array_image.get(order%5)));
+            background.setImageDrawable(getResources().getDrawable(array_image.get(order%5)));
+        }
+    }
+
+    public void justfortest(View view) {
+        Toast.makeText(MainActivity.this, "begin listening", Toast.LENGTH_LONG).show();
+    }
 }
