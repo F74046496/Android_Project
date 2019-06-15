@@ -385,18 +385,50 @@ public class MainActivity extends AppCompatActivity {
     private void playTheLoop() {
         IsLoop = (IsLoop+1)%2;
         if(IsLoop == 1) {
-            Toast.makeText(MainActivity.this, "單曲重複", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "單曲重複", Toast.LENGTH_SHORT).show();
+
+            ImageView myImgView = (ImageView) findViewById(R.id.id_repeat);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_green_40dp, getApplicationContext().getTheme()));
+            } else {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_green_40dp));
+            }
+
         } else {
-            Toast.makeText(MainActivity.this, "重複撥放關閉", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "重複撥放關閉", Toast.LENGTH_SHORT).show();
+
+            ImageView myImgView = (ImageView) findViewById(R.id.id_repeat);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_40dp, getApplicationContext().getTheme()));
+            } else {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_40dp));
+            }
+
         }
     }
 
     private void playTheRnd() {
         IsRnd = (IsRnd+1)%2;
         if(IsRnd == 1) {
-            Toast.makeText(MainActivity.this, "隨機撥放開起", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "隨機撥放開起", Toast.LENGTH_SHORT).show();
+            ImageView myImgView = (ImageView) findViewById(R.id.id_shuffle);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_shuffle_green_40dp, getApplicationContext().getTheme()));
+            } else {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_shuffle_green_40dp));
+            }
         } else {
-            Toast.makeText(MainActivity.this, "隨機撥放關閉", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "隨機撥放關閉", Toast.LENGTH_SHORT).show();
+            ImageView myImgView = (ImageView) findViewById(R.id.id_shuffle);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_shuffle_white_40dp, getApplicationContext().getTheme()));
+            } else {
+                myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_shuffle_white_40dp));
+            }
         }
     }
 

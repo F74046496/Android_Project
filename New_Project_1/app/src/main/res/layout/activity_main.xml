@@ -165,11 +165,13 @@
         android:weightSum="7"
         >
         <ImageView
+            android:id="@+id/id_shuffle"
             android:layout_width="wrap_content"
-            android:layout_height="25dp"
+            android:layout_height="20dp"
             android:layout_weight="1"
             android:onClick="playRndclick"
-            app:srcCompat="@drawable/ic_shuffle"/>
+            app:srcCompat="@drawable/ic_shuffle_white_40dp"
+            tools:ignore="VectorDrawableCompat"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="40dp"
@@ -191,11 +193,13 @@
             android:onClick="playNextClick"
             app:srcCompat="@drawable/ic_skip_next"/>
         <ImageView
+            android:id="@+id/id_repeat"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="20dp"
             android:layout_weight="1"
             android:onClick="playLoopClick"
-            app:srcCompat="@drawable/ic_repeat"/>
+            app:srcCompat="@drawable/ic_repeat_white_40dp"
+            tools:ignore="VectorDrawableCompat" />
     </LinearLayout>
 
 
