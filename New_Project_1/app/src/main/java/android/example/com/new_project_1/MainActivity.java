@@ -559,11 +559,11 @@ public class MainActivity extends AppCompatActivity {
         //ImageView background_forchange = (ImageView) findViewById(R.id.fullbackground);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            myImgView_forchange.setImageDrawable(getResources().getDrawable(array_image.get(order%22), getApplicationContext().getTheme()));
-            background_forchange.setImageDrawable(getResources().getDrawable(array_image.get(order%22), getApplicationContext().getTheme()));
+            myImgView_forchange.setImageDrawable(getResources().getDrawable(array_image.get(order%21), getApplicationContext().getTheme()));
+            background_forchange.setImageDrawable(getResources().getDrawable(array_image.get(order%21), getApplicationContext().getTheme()));
         } else {
-            myImgView_forchange.setImageDrawable(getResources().getDrawable(array_image.get(order%22)));
-            background_forchange.setImageDrawable(getResources().getDrawable(array_image.get(order%22)));
+            myImgView_forchange.setImageDrawable(getResources().getDrawable(array_image.get(order%21)));
+            background_forchange.setImageDrawable(getResources().getDrawable(array_image.get(order%21)));
         }
     }
 
