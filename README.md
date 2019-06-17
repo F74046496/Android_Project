@@ -36,4 +36,7 @@
     - notification功能
 
 ## 注意事項: 裝完API後須先去應用程式打開該程式的麥克風與儲存的權限，再開程式才不會crash。
+![image](https://github.com/F74046496/Android_Project/blob/master/screenshot/01.png)
+![image](picture or gif url)
+![image](picture or gif url)
 
