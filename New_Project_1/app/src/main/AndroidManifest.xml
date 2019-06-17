@@ -15,6 +15,10 @@
 
 
         <activity android:name=".MainActivity"></activity>
+        <receiver android:name=".NotificationReceiver" />
+        <receiver android:name=".playPauseReceiver" />
+        <receiver android:name=".skipPreviousReceiver" />
+        <receiver android:name=".skipNextReceiver" />
         <activity android:name=".Main2Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
