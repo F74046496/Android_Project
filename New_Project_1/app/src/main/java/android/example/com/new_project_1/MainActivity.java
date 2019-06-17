@@ -220,6 +220,12 @@ public class MainActivity extends AppCompatActivity {
                         else if (speechInput.equals("下一首") || speechInput.equals("下 一 首")) {
                             playTheNext();
                         }
+                        else if (speechInput.equals("隨機") || speechInput.equals("隨 機")) {
+                            playTheRnd();
+                        }
+                        else if (speechInput.equals("循環") || speechInput.equals("循 環") || speechInput.equals("重複") || speechInput.equals("重 複")) {
+                            playTheLoop();
+                        }
                     }
                 }
             }
@@ -358,6 +364,14 @@ public class MainActivity extends AppCompatActivity {
         mMediaPlayer.stop();
         mMediaPlayer.release();
 
+        ImageView myImgView = (ImageView) findViewById(R.id.play_pause);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_black_24dp, getApplicationContext().getTheme()));
+        } else {
+            myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_black_24dp));
+        }
+
         changebackground();
 
         readMusicAndSetMediaPlayer();
@@ -376,6 +390,14 @@ public class MainActivity extends AppCompatActivity {
         mMediaPlayer.pause();
         mMediaPlayer.stop();
         mMediaPlayer.release();
+
+        ImageView myImgView = (ImageView) findViewById(R.id.play_pause);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_black_24dp, getApplicationContext().getTheme()));
+        } else {
+            myImgView.setImageDrawable(getResources().getDrawable(R.drawable.ic_pause_black_24dp));
+        }
 
         changebackground();
 
